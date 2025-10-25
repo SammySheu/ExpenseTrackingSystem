@@ -60,9 +60,9 @@ python3 expense_tracker.py
 ### C++
 
 ```
-cd c++_expense_tracker
+cd cpp_expense_tracker
 
-g++ expense_tracker.cpp -o expense_tracker
+make
 
 ./expense_tracker
 ```
