@@ -26,3 +26,36 @@ htmlcov/
 *.swp
 *.swo
 *~
+**/.DS_Store
+
+# C++ compiled files
+**/*.o
+**/*.out
+**/*.obj
+**/*.exe
+
+# C++ executables
+**/expense_tracker
+expense_tracker
+
+# C++ libraries
+**/*.a
+**/*.so
+**/*.dylib
+**/*.lib
+**/*.dll
+
+# Build directories
+**/build/
+**/bin/
+**/obj/
+
+# CMake
+**/CMakeCache.txt
+**/CMakeFiles/
+**/cmake_install.cmake
+**/Makefile.in
+
+# Debug files
+**/*.dSYM/
+**/*.pdb
