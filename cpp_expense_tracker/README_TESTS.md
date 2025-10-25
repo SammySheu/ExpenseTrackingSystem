@@ -17,8 +17,7 @@ cpp_expense_tracker/
 │   ├── test_expense_operations.cpp # Business logic tests
 │   ├── test_integration.cpp        # Integration tests (module interactions)
 │   └── test_functional.cpp         # Functional tests (user stories)
-├── Makefile.test                   # Test build configuration
-└── CMakeLists.txt                  # CMake configuration
+└── Makefile.test                   # Test build configuration
 ```
 
 ## Test Coverage
@@ -151,8 +150,6 @@ ls /usr/lib/libgtest*        # Linux
 
 ## Building Tests
 
-### Using Makefile (Recommended)
-
 ```bash
 # Build test executable
 make -f Makefile.test
@@ -167,25 +164,6 @@ make -f Makefile.test run-utils-tests
 
 # Clean test artifacts
 make -f Makefile.test clean-tests
-```
-
-### Using CMake
-
-```bash
-# Create build directory
-mkdir build && cd build
-
-# Configure
-cmake ..
-
-# Build
-make
-
-# Run tests
-ctest --verbose
-
-# Or run directly
-./run_tests
 ```
 
 ## Running Tests
@@ -431,6 +409,10 @@ g++ --version  # Should be 7.0+
 # Check compiler flags
 make -f Makefile.test CXXFLAGS="-std=c++17 -v"
 ```
+
+### Build System
+
+This project uses **Makefile only**. All build commands use `make -f Makefile.test`.
 
 ## Test Statistics
 
