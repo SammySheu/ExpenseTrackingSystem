@@ -1,5 +1,4 @@
 # Python Expense Tracking System Dependencies
-# This application uses only Python standard library modules
 
 # Core Python modules used:
 # - sqlite3 (database operations)
@@ -9,5 +8,10 @@
 # - sys (system operations)
 # - os (file system operations)
 
-# No external dependencies required - all functionality uses Python standard library
-# Python 3.7+ recommended for full type hint support
+# Testing Dependencies
+pytest>=7.4.0              # Testing framework
+pytest-cov>=4.1.0          # Coverage reporting
+pytest-mock>=3.11.1        # Mocking utilities
+freezegun>=1.2.2           # Time mocking for date tests
+
+# Python 3.11+ recommended for full type hint support
