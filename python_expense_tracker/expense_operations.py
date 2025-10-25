@@ -202,12 +202,13 @@ def view_all_expenses() -> List[Dict]:
 def calculate_summary(expenses: Optional[List[Dict]] = None) -> Dict[str, Any]:
     """
     Calculate expense summary with totals and breakdowns
+    Groups expenses by user with detailed expense lists
     
     Args:
         expenses: List of expenses to summarize (if None, uses all expenses)
         
     Returns:
-        Dict: Summary dictionary with totals and breakdowns
+        Dict: Summary dictionary with totals, breakdowns, and user expense details
     """
     try:
         if expenses is None:
@@ -218,7 +219,8 @@ def calculate_summary(expenses: Optional[List[Dict]] = None) -> Dict[str, Any]:
                 'total': 0.0,
                 'count': 0,
                 'by_category': {},
-                'by_user': {}
+                'by_user': {},
+                'user_expenses': {}
             }
         
         # Calculate totals using list comprehensions (Python feature)
@@ -231,17 +233,27 @@ def calculate_summary(expenses: Optional[List[Dict]] = None) -> Dict[str, Any]:
             category = expense['category_name']
             by_category[category] = by_category.get(category, 0) + expense['amount']
         
-        # Calculate by user using dictionary comprehension (Python feature)
+        # Group expenses by user with detailed expense lists (Python feature)
+        user_expenses = {}
         by_user = {}
+        
         for expense in expenses:
             user = expense['user_name']
+            
+            # Add to user total
             by_user[user] = by_user.get(user, 0) + expense['amount']
+            
+            # Group expenses by user for detailed view
+            if user not in user_expenses:
+                user_expenses[user] = []
+            user_expenses[user].append(expense)
         
         return {
             'total': total,
             'count': count,
             'by_category': by_category,
-            'by_user': by_user
+            'by_user': by_user,
+            'user_expenses': user_expenses
         }
     except Exception as e:
         print(f"Error calculating summary: {e}")
@@ -249,7 +261,8 @@ def calculate_summary(expenses: Optional[List[Dict]] = None) -> Dict[str, Any]:
             'total': 0.0,
             'count': 0,
             'by_category': {},
-            'by_user': {}
+            'by_user': {},
+            'user_expenses': {}
         }
 
 

@@ -142,29 +142,75 @@ def format_expense_output(expenses: List[Dict]) -> str:
 def format_summary_output(summary: Dict[str, Any]) -> str:
     """
     Format expense summary in a readable format
+    Shows: 1) Each User's Expenses in Separate Tables, 2) Total Expenses, 3) Percentage by Category
     
     Args:
-        summary: Summary dictionary with totals and category breakdowns
+        summary: Summary dictionary with totals, category breakdowns, and user expense details
         
     Returns:
         str: Formatted summary string
     """
     output = []
-    output.append("=== EXPENSE SUMMARY ===")
+    output.append("=== EXPENSE SUMMARY ===\n")
+    
+    # 1. Show each user's expenses in separate tables
+    if summary.get('user_expenses'):
+        output.append("EXPENSES BY USER:")
+        output.append("=" * 80)
+        
+        for user, expenses in summary['user_expenses'].items():
+            output.append(f"\n{user}'s Expenses:")
+            output.append("-" * 80)
+            
+            # Create table for this user's expenses
+            if expenses:
+                # Calculate column widths for this user's expenses
+                max_date_width = max(len(exp['date']) for exp in expenses)
+                max_title_width = max(len(exp['title']) for exp in expenses)
+                max_amount_width = max(len(format_currency(exp['amount'])) for exp in expenses)
+                max_category_width = max(len(exp['category_name']) for exp in expenses)
+                
+                # Set minimum widths
+                date_width = max(max_date_width, 10)
+                title_width = max(max_title_width, 15)
+                amount_width = max(max_amount_width, 8)
+                category_width = max(max_category_width, 10)
+                
+                # Create header for user's table
+                header = f"{'Date':<{date_width}} | {'Title':<{title_width}} | {'Amount':<{amount_width}} | {'Category':<{category_width}}"
+                output.append(header)
+                output.append("-" * len(header))
+                
+                # Add expense rows
+                for expense in expenses:
+                    row = f"{expense['date']:<{date_width}} | {expense['title']:<{title_width}} | {format_currency(expense['amount']):<{amount_width}} | {expense['category_name']:<{category_width}}"
+                    output.append(row)
+                
+                # Add user's total
+                user_total = summary['by_user'][user]
+                output.append("-" * len(header))
+                output.append(f"{'TOTAL':<{date_width}} | {'':<{title_width}} | {format_currency(user_total):<{amount_width}} | {len(expenses)} expense(s)")
+            
+            output.append("")
+        
+        output.append("=" * 80)
+        output.append("")
+    
+    # 2. Show total expenses
+    output.append("OVERALL SUMMARY:")
     output.append(f"Total Expenses: {format_currency(summary['total'])}")
     output.append(f"Number of Expenses: {summary['count']}")
     output.append("")
     
-    if summary['by_category']:
-        output.append("By Category:")
-        for category, amount in summary['by_category'].items():
-            output.append(f"  {category}: {format_currency(amount)}")
-        output.append("")
-    
-    if summary['by_user']:
-        output.append("By User:")
-        for user, amount in summary['by_user'].items():
-            output.append(f"  {user}: {format_currency(amount)}")
+    # 3. Show percentage breakdown by category
+    if summary['by_category'] and summary['total'] > 0:
+        output.append("CATEGORY BREAKDOWN (with Percentages):")
+        # Sort categories by amount (descending) for better readability
+        sorted_categories = sorted(summary['by_category'].items(), key=lambda x: x[1], reverse=True)
+        
+        for category, amount in sorted_categories:
+            percentage = (amount / summary['total']) * 100
+            output.append(f"  {category}: {format_currency(amount)} ({percentage:.1f}%)")
     
     return "\n".join(output)
 

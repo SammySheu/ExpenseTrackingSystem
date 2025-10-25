@@ -160,7 +160,6 @@ def filter_by_user() -> None:
 
 def view_expense_summary() -> None:
     """Display expense summary"""
-    print("\n=== Expense Summary ===")
     
     try:
         summary = expense_operations.calculate_summary()
