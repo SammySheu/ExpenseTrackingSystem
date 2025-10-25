@@ -1,0 +1,79 @@
+# Test-specific Makefile for C++ Expense Tracker
+# Demonstrates C++ testing with Google Test framework
+
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -g -I.
+LDFLAGS = -lsqlite3 -lgtest -lgtest_main -lpthread
+
+# Source files (excluding main.cpp)
+SOURCES = database.cpp \
+          models.cpp \
+          expense_operations.cpp \
+          utils.cpp
+
+# Test files
+TEST_SOURCES = tests/test_main.cpp \
+               tests/test_database.cpp \
+               tests/test_models.cpp \
+               tests/test_utils.cpp \
+               tests/test_expense_operations.cpp \
+               tests/test_integration.cpp \
+               tests/test_functional.cpp
+
+# Test executable
+TEST_TARGET = run_tests
+
+# Build tests
+test: $(TEST_TARGET)
+
+$(TEST_TARGET): $(SOURCES) $(TEST_SOURCES)
+	@echo "Compiling C++ tests..."
+	@echo "C++ FEATURE: Separate compilation for tests (vs Python's no compilation)"
+	$(CXX) $(CXXFLAGS) $(SOURCES) $(TEST_SOURCES) -o $(TEST_TARGET) $(LDFLAGS)
+	@echo "Test executable created: $(TEST_TARGET)"
+
+# Run tests
+run-tests: $(TEST_TARGET)
+	@echo "Running C++ tests with Google Test..."
+	./$(TEST_TARGET)
+
+# Run specific test suite
+run-database-tests: $(TEST_TARGET)
+	./$(TEST_TARGET) --gtest_filter=DatabaseTest.*
+
+run-models-tests: $(TEST_TARGET)
+	./$(TEST_TARGET) --gtest_filter=ModelsTest.*
+
+run-utils-tests: $(TEST_TARGET)
+	./$(TEST_TARGET) --gtest_filter=UtilsTest.*
+
+# Run with valgrind (memory leak detection - C++ specific!)
+valgrind: $(TEST_TARGET)
+	@echo "Running valgrind to check for memory leaks..."
+	@echo "C++ FEATURE: Memory leak detection (Python has automatic GC)"
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(TEST_TARGET)
+
+# Clean test artifacts
+clean-tests:
+	@echo "Cleaning test artifacts..."
+	rm -f $(TEST_TARGET) test_expenses_*.db
+
+# Help
+help:
+	@echo "C++ Test Makefile"
+	@echo "Available targets:"
+	@echo "  make test              - Build test executable"
+	@echo "  make run-tests         - Build and run all tests"
+	@echo "  make run-database-tests - Run only database tests"
+	@echo "  make run-models-tests   - Run only models tests"
+	@echo "  make run-utils-tests    - Run only utils tests"
+	@echo "  make valgrind          - Run tests with memory leak detection"
+	@echo "  make clean-tests       - Remove test artifacts"
+	@echo ""
+	@echo "C++ vs Python Testing:"
+	@echo "  - C++ requires compilation (Python doesn't)"
+	@echo "  - C++ uses Google Test (Python uses pytest)"
+	@echo "  - C++ needs memory leak checking (Python has GC)"
+
+.PHONY: test run-tests run-database-tests run-models-tests run-utils-tests valgrind clean-tests help
+

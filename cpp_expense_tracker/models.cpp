@@ -26,6 +26,16 @@ int Models::createUser(Database& db, const std::string& name) {
         throw std::runtime_error("Database not connected");
     }
     
+    // Validate user name is not empty
+    std::string trimmed_name = name;
+    // Trim whitespace
+    trimmed_name.erase(0, trimmed_name.find_first_not_of(" \t\n\r"));
+    trimmed_name.erase(trimmed_name.find_last_not_of(" \t\n\r") + 1);
+    
+    if (trimmed_name.empty()) {
+        throw std::invalid_argument("User name cannot be empty");
+    }
+    
     // C++ FEATURE: Prepared statements for SQL injection prevention
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO Users (name) VALUES (?)";
@@ -36,7 +46,7 @@ int Models::createUser(Database& db, const std::string& name) {
     }
     
     // Bind parameter
-    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 1, trimmed_name.c_str(), -1, SQLITE_TRANSIENT);
     
     // Execute
     int rc = sqlite3_step(stmt);
@@ -220,6 +230,21 @@ int Models::insertExpense(Database& db, const std::string& date,
         throw std::runtime_error("Database not connected");
     }
     
+    // Validate title is not empty
+    std::string trimmed_title = title;
+    // Trim whitespace
+    trimmed_title.erase(0, trimmed_title.find_first_not_of(" \t\n\r"));
+    trimmed_title.erase(trimmed_title.find_last_not_of(" \t\n\r") + 1);
+    
+    if (trimmed_title.empty()) {
+        throw std::invalid_argument("Expense title cannot be empty");
+    }
+    
+    // Validate amount is positive
+    if (amount <= 0.0) {
+        throw std::invalid_argument("Expense amount must be positive");
+    }
+    
     std::string created_at = Database::getCurrentTimestamp();
     
     sqlite3_stmt* stmt;
@@ -235,7 +260,7 @@ int Models::insertExpense(Database& db, const std::string& date,
     // C++ FEATURE: Explicit type binding for each parameter
     sqlite3_bind_text(stmt, 1, date.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 2, category_id);
-    sqlite3_bind_text(stmt, 3, title.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, trimmed_title.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, 4, amount);
     sqlite3_bind_text(stmt, 5, created_at.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 6, user_id);
