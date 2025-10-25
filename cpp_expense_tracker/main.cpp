@@ -240,7 +240,6 @@ void manageUsers(Database& db) {
         }
         
         std::cout << "\nPress Enter to continue...";
-        std::cin.ignore();
         std::cin.get();
     }
 }
@@ -292,7 +291,6 @@ void manageCategories(Database& db) {
         }
         
         std::cout << "\nPress Enter to continue...";
-        std::cin.ignore();
         std::cin.get();
     }
 }
@@ -356,7 +354,6 @@ int main() {
             // Pause before showing menu again
             if (choice != 0) {
                 std::cout << "\nPress Enter to continue...";
-                std::cin.ignore();
                 std::cin.get();
             }
             
