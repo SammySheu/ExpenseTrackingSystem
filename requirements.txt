@@ -1,0 +1,13 @@
+# Python Expense Tracking System Dependencies
+# This application uses only Python standard library modules
+
+# Core Python modules used:
+# - sqlite3 (database operations)
+# - datetime (date/time handling)
+# - typing (type hints for better code documentation)
+# - re (regular expressions for validation)
+# - sys (system operations)
+# - os (file system operations)
+
+# No external dependencies required - all functionality uses Python standard library
+# Python 3.7+ recommended for full type hint support
