@@ -59,3 +59,7 @@ expense_tracker
 # Debug files
 **/*.dSYM/
 **/*.pdb
+
+# Ignore test executables
+**/run_tests
+run_tests
