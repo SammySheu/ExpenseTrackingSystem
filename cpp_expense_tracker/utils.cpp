@@ -28,14 +28,25 @@ bool Utils::validateDate(const std::string& date) {
         return false;
     }
     
-    // Basic date validation (simplified)
+    // Basic date validation with proper day-per-month checking
     int year, month, day;
     char dash1, dash2;
     std::stringstream ss(date);
     ss >> year >> dash1 >> month >> dash2 >> day;
     
     if (month < 1 || month > 12) return false;
-    if (day < 1 || day > 31) return false;
+    if (day < 1) return false;
+    
+    // Days per month
+    int days_in_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    
+    // Check for leap year
+    bool is_leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    if (is_leap && month == 2) {
+        days_in_month[1] = 29;
+    }
+    
+    if (day > days_in_month[month - 1]) return false;
     
     return true;
 }
