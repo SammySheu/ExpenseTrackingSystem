@@ -4,7 +4,7 @@
  * 
  * C++ TESTING FEATURES DEMONSTRATED:
  * - STL vector testing
- * - std::optional testing
+ * - optional testing
  * - Exception testing with EXPECT_THROW
  * - Test fixture inheritance
  * - Pass by reference testing
@@ -13,6 +13,8 @@
 #include <gtest/gtest.h>
 #include "test_helpers.h"
 #include "../models.h"
+
+using namespace std;
 
 // ============================================================================
 // USER TESTS
@@ -43,7 +45,7 @@ TEST_F(ModelsTest, CreateUserWithDuplicateNameThrows) {
     // C++ FEATURE: EXPECT_THROW macro for exception testing
     EXPECT_THROW(
         Models::createUser(*db, "DuplicateUser"),
-        std::runtime_error
+        runtime_error
     );
 }
 
@@ -54,12 +56,12 @@ TEST_F(ModelsTest, CreateUserWithDuplicateNameThrows) {
 TEST_F(ModelsTest, CreateUserWithEmptyNameThrows) {
     EXPECT_THROW(
         Models::createUser(*db, ""),
-        std::invalid_argument
+        invalid_argument
     );
     
     EXPECT_THROW(
         Models::createUser(*db, "   "),
-        std::invalid_argument
+        invalid_argument
     );
 }
 
@@ -69,11 +71,11 @@ TEST_F(ModelsTest, CreateUserWithEmptyNameThrows) {
  * 
  * CONTRAST WITH PYTHON:
  * Python: Returns empty list []
- * C++: Returns empty std::vector<User>
+ * C++: Returns empty vector<User>
  */
 TEST_F(ModelsTest, GetAllUsersReturnsEmptyVector) {
     // C++ FEATURE: STL vector return type
-    std::vector<User> users = Models::getAllUsers(*db);
+    vector<User> users = Models::getAllUsers(*db);
     
     EXPECT_TRUE(users.empty());
     EXPECT_EQ(users.size(), 0);
@@ -90,7 +92,7 @@ TEST_F(ModelsTest, GetAllUsersReturnsAllUsers) {
     Models::createUser(*db, "User3");
     
     // C++ FEATURE: STL vector with struct elements
-    std::vector<User> users = Models::getAllUsers(*db);
+    vector<User> users = Models::getAllUsers(*db);
     
     EXPECT_EQ(users.size(), 3);
     EXPECT_EQ(users[0].name, "User1");
@@ -100,17 +102,17 @@ TEST_F(ModelsTest, GetAllUsersReturnsAllUsers) {
 
 /**
  * TEST: GetUserByName returns optional with value
- * C++ FEATURE: std::optional testing (C++17)
+ * C++ FEATURE: optional testing (C++17)
  * 
  * CONTRAST WITH PYTHON:
  * Python: Returns None or dict
- * C++: Returns std::optional<User>
+ * C++: Returns optional<User>
  */
 TEST_F(ModelsTest, GetUserByNameReturnsOptional) {
     Models::createUser(*db, "FindMe");
     
-    // C++ FEATURE: std::optional return type
-    std::optional<User> user = Models::getUserByName(*db, "FindMe");
+    // C++ FEATURE: optional return type
+    optional<User> user = Models::getUserByName(*db, "FindMe");
     
     // C++ FEATURE: has_value() checks if optional contains value
     EXPECT_TRUE(user.has_value());
@@ -121,12 +123,12 @@ TEST_F(ModelsTest, GetUserByNameReturnsOptional) {
 
 /**
  * TEST: GetUserByName returns nullopt when not found
- * C++ FEATURE: std::nullopt testing
+ * C++ FEATURE: nullopt testing
  */
 TEST_F(ModelsTest, GetUserByNameReturnsNulloptWhenNotFound) {
-    std::optional<User> user = Models::getUserByName(*db, "NonExistent");
+    optional<User> user = Models::getUserByName(*db, "NonExistent");
     
-    // C++ FEATURE: std::optional can be empty (nullopt)
+    // C++ FEATURE: optional can be empty (nullopt)
     EXPECT_FALSE(user.has_value());
 }
 
@@ -151,7 +153,7 @@ TEST_F(ModelsTest, CreateCategoryWithDuplicateThrows) {
     
     EXPECT_THROW(
         Models::createCategory(*db, "DuplicateCategory"),
-        std::runtime_error
+        runtime_error
     );
 }
 
@@ -161,7 +163,7 @@ TEST_F(ModelsTest, CreateCategoryWithDuplicateThrows) {
  */
 TEST_F(ModelsTest, GetAllCategoriesIncludesDefaults) {
     // C++ FEATURE: STL vector of Category structs
-    std::vector<Category> categories = Models::getAllCategories(*db);
+    vector<Category> categories = Models::getAllCategories(*db);
     
     // Should have default categories
     EXPECT_GT(categories.size(), 0);
@@ -175,9 +177,9 @@ TEST_F(ModelsTest, GetCategoryByNameReturnsOptional) {
     auto categories = Models::getAllCategories(*db);
     ASSERT_FALSE(categories.empty());
     
-    std::string category_name = categories[0].name;
+    string category_name = categories[0].name;
     
-    std::optional<Category> category = Models::getCategoryByName(*db, category_name);
+    optional<Category> category = Models::getCategoryByName(*db, category_name);
     
     EXPECT_TRUE(category.has_value());
     EXPECT_EQ(category.value().name, category_name);
@@ -212,7 +214,7 @@ TEST_F(ModelsTest, InsertExpenseWithInvalidCategoryIdThrows) {
     EXPECT_THROW(
         Models::insertExpense(*db, "2025-10-25", 99999,
                             "Invalid Category", 50.0, user_id),
-        std::runtime_error
+        runtime_error
     );
 }
 
@@ -225,7 +227,7 @@ TEST_F(ModelsTest, InsertExpenseWithInvalidUserIdThrows) {
     EXPECT_THROW(
         Models::insertExpense(*db, "2025-10-25", category_id,
                             "Invalid User", 50.0, 99999),
-        std::runtime_error
+        runtime_error
     );
 }
 
@@ -239,7 +241,7 @@ TEST_F(ModelsTest, InsertExpenseWithEmptyTitleThrows) {
     EXPECT_THROW(
         Models::insertExpense(*db, "2025-10-25", category_id,
                             "", 50.0, user_id),
-        std::invalid_argument
+        invalid_argument
     );
 }
 
@@ -253,7 +255,7 @@ TEST_F(ModelsTest, InsertExpenseWithNegativeAmountThrows) {
     EXPECT_THROW(
         Models::insertExpense(*db, "2025-10-25", category_id,
                             "Negative Amount", -50.0, user_id),
-        std::invalid_argument
+        invalid_argument
     );
 }
 
@@ -273,7 +275,7 @@ TEST_F(ModelsTest, FetchExpensesByFiltersNoFilters) {
     Models::insertExpense(*db, "2025-10-26", category_id, "Expense 2", 20.0, user_id);
     
     // C++ FEATURE: nullptr for optional parameters
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     
     EXPECT_EQ(expenses.size(), 2);
 }
@@ -291,10 +293,10 @@ TEST_F(ModelsTest, FetchExpensesByFiltersDateRange) {
     Models::insertExpense(*db, "2025-10-30", category_id, "Late", 30.0, user_id);
     
     // C++ FEATURE: Pass pointers for optional parameters
-    std::string min_date = "2025-10-22";
-    std::string max_date = "2025-10-28";
+    string min_date = "2025-10-22";
+    string max_date = "2025-10-28";
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(
+    vector<Expense> expenses = Models::fetchExpensesByFilters(
         *db, &min_date, &max_date
     );
     
@@ -316,7 +318,7 @@ TEST_F(ModelsTest, FetchExpensesByFiltersAmountRange) {
     double min_amount = 30.0;
     double max_amount = 70.0;
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(
+    vector<Expense> expenses = Models::fetchExpensesByFilters(
         *db, nullptr, nullptr, &min_amount, &max_amount
     );
     
@@ -340,10 +342,10 @@ TEST_F(ModelsTest, FetchExpensesByFiltersCategoryIds) {
     Models::insertExpense(*db, "2025-10-25", cat1, "Cat1 Expense", 10.0, user_id);
     Models::insertExpense(*db, "2025-10-25", cat2, "Cat2 Expense", 20.0, user_id);
     
-    // C++ FEATURE: std::vector for multiple values
-    std::vector<int> category_ids = {cat1};
+    // C++ FEATURE: vector for multiple values
+    vector<int> category_ids = {cat1};
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(
+    vector<Expense> expenses = Models::fetchExpensesByFilters(
         *db, nullptr, nullptr, nullptr, nullptr, &category_ids
     );
     
@@ -362,7 +364,7 @@ TEST_F(ModelsTest, FetchExpensesByFiltersUserId) {
     Models::insertExpense(*db, "2025-10-25", category_id, "User1 Expense", 10.0, user1);
     Models::insertExpense(*db, "2025-10-25", category_id, "User2 Expense", 20.0, user2);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(
+    vector<Expense> expenses = Models::fetchExpensesByFilters(
         *db, nullptr, nullptr, nullptr, nullptr, nullptr, &user1
     );
     
@@ -382,12 +384,12 @@ TEST_F(ModelsTest, FetchExpensesByFiltersMultiple) {
     Models::insertExpense(*db, "2025-10-25", category_id, "No Match Date", 50.0, user_id);
     Models::insertExpense(*db, "2025-10-22", category_id, "No Match Amount", 100.0, user_id);
     
-    std::string min_date = "2025-10-19";
-    std::string max_date = "2025-10-21";
+    string min_date = "2025-10-19";
+    string max_date = "2025-10-21";
     double min_amount = 40.0;
     double max_amount = 60.0;
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(
+    vector<Expense> expenses = Models::fetchExpensesByFilters(
         *db, &min_date, &max_date, &min_amount, &max_amount
     );
     
@@ -405,7 +407,7 @@ TEST_F(ModelsTest, ExpenseContainsJoinedData) {
     
     Models::insertExpense(*db, "2025-10-25", category_id, "Test", 50.0, user_id);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     
     ASSERT_EQ(expenses.size(), 1);
     

@@ -15,12 +15,14 @@
 #include "../database.h"
 #include <fstream>
 
+using namespace std;
+
 /**
  * TEST: Database constructor opens connection
  * C++ FEATURE: RAII - constructor acquires resource
  */
 TEST(DatabaseTest, DatabaseConstructorOpensConnection) {
-    std::string path = "test_constructor.db";
+    string path = "test_constructor.db";
     
     // C++ FEATURE: RAII - constructor creates and opens database
     Database db(path);
@@ -29,7 +31,7 @@ TEST(DatabaseTest, DatabaseConstructorOpensConnection) {
     EXPECT_NE(db.getConnection(), nullptr);
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
@@ -41,7 +43,7 @@ TEST(DatabaseTest, DatabaseConstructorOpensConnection) {
  * C++: Uses destructor called automatically when object goes out of scope
  */
 TEST(DatabaseTest, DatabaseDestructorClosesConnection) {
-    std::string path = "test_destructor.db";
+    string path = "test_destructor.db";
     
     {
         // C++ FEATURE: Scope-based lifetime management
@@ -51,7 +53,7 @@ TEST(DatabaseTest, DatabaseDestructorClosesConnection) {
     }
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
@@ -59,7 +61,7 @@ TEST(DatabaseTest, DatabaseDestructorClosesConnection) {
  * Tests schema creation
  */
 TEST(DatabaseTest, InitializeDatabaseCreatesTables) {
-    std::string path = "test_init.db";
+    string path = "test_init.db";
     Database db(path);
     
     // Initialize database
@@ -85,14 +87,14 @@ TEST(DatabaseTest, InitializeDatabaseCreatesTables) {
     EXPECT_EQ(table_count, 3);
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
  * TEST: Initialize database creates default categories
  */
 TEST(DatabaseTest, InitializeDatabaseCreatesDefaultCategories) {
-    std::string path = "test_categories.db";
+    string path = "test_categories.db";
     Database db(path);
     db.initialize();
     
@@ -114,7 +116,7 @@ TEST(DatabaseTest, InitializeDatabaseCreatesDefaultCategories) {
     EXPECT_GT(count, 0);
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
@@ -122,7 +124,7 @@ TEST(DatabaseTest, InitializeDatabaseCreatesDefaultCategories) {
  * C++ FEATURE: Raw pointer testing
  */
 TEST(DatabaseTest, GetConnectionReturnsValidPointer) {
-    std::string path = "test_connection.db";
+    string path = "test_connection.db";
     Database db(path);
     
     // C++ FEATURE: Raw pointer from C API
@@ -131,7 +133,7 @@ TEST(DatabaseTest, GetConnectionReturnsValidPointer) {
     EXPECT_NE(conn, nullptr);
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
@@ -139,17 +141,17 @@ TEST(DatabaseTest, GetConnectionReturnsValidPointer) {
  * C++ FEATURE: Static method testing
  */
 TEST(DatabaseTest, DatabaseExistsReturnsTrueForExistingFile) {
-    std::string path = "test_exists.db";
+    string path = "test_exists.db";
     
     // Create file
-    std::ofstream file(path);
+    ofstream file(path);
     file.close();
     
     // C++ FEATURE: Static method call
     EXPECT_TRUE(Database::exists(path));
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
@@ -165,7 +167,7 @@ TEST(DatabaseTest, DatabaseExistsReturnsFalseForNonExistent) {
  */
 TEST(DatabaseTest, GetCurrentTimestampReturnsValidFormat) {
     // C++ FEATURE: Static method call
-    std::string timestamp = Database::getCurrentTimestamp();
+    string timestamp = Database::getCurrentTimestamp();
     
     // Verify format: YYYY-MM-DD HH:MM:SS
     EXPECT_EQ(timestamp.length(), 19);
@@ -178,17 +180,17 @@ TEST(DatabaseTest, GetCurrentTimestampReturnsValidFormat) {
 
 /**
  * TEST: Smart pointer cleanup
- * C++ FEATURE: std::unique_ptr for automatic memory management
+ * C++ FEATURE: unique_ptr for automatic memory management
  * 
  * CONTRAST WITH PYTHON:
  * Python: Garbage collector handles cleanup
  * C++: Smart pointers provide automatic cleanup
  */
 TEST(DatabaseTest, SmartPointerCleanup) {
-    std::string path = "test_smart_ptr.db";
+    string path = "test_smart_ptr.db";
     
-    // C++ FEATURE: std::make_unique creates smart pointer
-    auto db = std::make_unique<Database>(path);
+    // C++ FEATURE: make_unique creates smart pointer
+    auto db = make_unique<Database>(path);
     
     EXPECT_NE(db, nullptr);
     EXPECT_NE(db->getConnection(), nullptr);
@@ -197,7 +199,7 @@ TEST(DatabaseTest, SmartPointerCleanup) {
     db.reset();
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
@@ -205,8 +207,8 @@ TEST(DatabaseTest, SmartPointerCleanup) {
  * Tests that multiple Database objects can coexist
  */
 TEST(DatabaseTest, MultipleDatabaseInstances) {
-    std::string path1 = "test_multi1.db";
-    std::string path2 = "test_multi2.db";
+    string path1 = "test_multi1.db";
+    string path2 = "test_multi2.db";
     
     Database db1(path1);
     Database db2(path2);
@@ -219,8 +221,8 @@ TEST(DatabaseTest, MultipleDatabaseInstances) {
     EXPECT_NE(db1.getConnection(), db2.getConnection());
     
     // Cleanup
-    std::remove(path1.c_str());
-    std::remove(path2.c_str());
+    remove(path1.c_str());
+    remove(path2.c_str());
 }
 
 /**
@@ -228,7 +230,7 @@ TEST(DatabaseTest, MultipleDatabaseInstances) {
  * Verifies PRAGMA foreign_keys is enabled
  */
 TEST(DatabaseTest, DatabaseEnablesForeignKeys) {
-    std::string path = "test_fk.db";
+    string path = "test_fk.db";
     Database db(path);
     db.initialize();
     
@@ -248,7 +250,7 @@ TEST(DatabaseTest, DatabaseEnablesForeignKeys) {
     EXPECT_EQ(fk_enabled, 1);
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 
 /**
@@ -258,21 +260,21 @@ TEST(DatabaseTest, DatabaseEnablesForeignKeys) {
  * Even if exception is thrown, destructor is still called
  */
 TEST(DatabaseTest, RAIICleanupWithException) {
-    std::string path = "test_exception.db";
+    string path = "test_exception.db";
     
     try {
         Database db(path);
         db.initialize();
         
         // Simulate exception
-        throw std::runtime_error("Test exception");
+        throw runtime_error("Test exception");
         
-    } catch (const std::exception& e) {
+    } catch (const exception& e) {
         // Exception caught, but destructor was still called
         EXPECT_STREQ(e.what(), "Test exception");
     }
     
     // Cleanup
-    std::remove(path.c_str());
+    remove(path.c_str());
 }
 

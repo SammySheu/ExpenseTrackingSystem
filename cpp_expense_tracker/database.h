@@ -16,6 +16,8 @@
 #include <string>
 #include <sqlite3.h>
 
+using namespace std;
+
 /**
  * C++ FEATURE: RAII (Resource Acquisition Is Initialization)
  * Database class manages SQLite connection lifetime
@@ -28,11 +30,11 @@
 class Database {
 private:
     sqlite3* db;  // C++ FEATURE: Raw pointer for C API interaction
-    std::string db_path;
+    string db_path;
     
 public:
     // Constructor - opens database connection
-    Database(const std::string& path);
+    Database(const string& path);
     
     // C++ FEATURE: Destructor for automatic resource cleanup
     // Called automatically when object goes out of scope
@@ -50,10 +52,10 @@ public:
     sqlite3* getConnection();
     
     // Check if database file exists
-    static bool exists(const std::string& path);
+    static bool exists(const string& path);
     
     // Get current timestamp
-    static std::string getCurrentTimestamp();
+    static string getCurrentTimestamp();
 };
 
 #endif // DATABASE_H

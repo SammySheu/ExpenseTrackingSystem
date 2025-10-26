@@ -17,17 +17,19 @@
 #include <iomanip>
 #include <sstream>
 
+using namespace std;
+
 /**
  * C++ FEATURE: Constructor with initializer list
  * MEMORY MANAGEMENT: Opens database connection
  * Must be closed in destructor (RAII pattern)
  */
-Database::Database(const std::string& path) : db(nullptr), db_path(path) {
+Database::Database(const string& path) : db(nullptr), db_path(path) {
     // C++ FEATURE: Manual error handling with return codes
     int rc = sqlite3_open(path.c_str(), &db);
     
     if (rc != SQLITE_OK) {
-        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
         sqlite3_close(db);
         db = nullptr;
     } else {
@@ -56,8 +58,8 @@ sqlite3* Database::getConnection() {
     return db;
 }
 
-bool Database::exists(const std::string& path) {
-    std::ifstream file(path);
+bool Database::exists(const string& path) {
+    ifstream file(path);
     return file.good();
 }
 
@@ -66,12 +68,12 @@ bool Database::exists(const std::string& path) {
  * CONTRAST WITH PYTHON: Python's datetime module is more straightforward
  * C++ requires more verbose code for date/time handling
  */
-std::string Database::getCurrentTimestamp() {
-    auto now = std::chrono::system_clock::now();
-    auto time_t_now = std::chrono::system_clock::to_time_t(now);
+string Database::getCurrentTimestamp() {
+    auto now = chrono::system_clock::now();
+    auto time_t_now = chrono::system_clock::to_time_t(now);
     
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&time_t_now), "%Y-%m-%d %H:%M:%S");
+    stringstream ss;
+    ss << put_time(localtime(&time_t_now), "%Y-%m-%d %H:%M:%S");
     return ss.str();
 }
 
@@ -83,7 +85,7 @@ std::string Database::getCurrentTimestamp() {
  */
 bool Database::initialize() {
     if (db == nullptr) {
-        std::cerr << "Database not connected" << std::endl;
+        cerr << "Database not connected" << endl;
         return false;
     }
     
@@ -98,7 +100,7 @@ bool Database::initialize() {
     )";
     
     if (sqlite3_exec(db, sql_users, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-        std::cerr << "Error creating Users table: " << errMsg << std::endl;
+        cerr << "Error creating Users table: " << errMsg << endl;
         sqlite3_free(errMsg);  // C++ FEATURE: Manual memory cleanup
         return false;
     }
@@ -112,7 +114,7 @@ bool Database::initialize() {
     )";
     
     if (sqlite3_exec(db, sql_categories, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-        std::cerr << "Error creating Categories table: " << errMsg << std::endl;
+        cerr << "Error creating Categories table: " << errMsg << endl;
         sqlite3_free(errMsg);
         return false;
     }
@@ -133,7 +135,7 @@ bool Database::initialize() {
     )";
     
     if (sqlite3_exec(db, sql_expenses, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-        std::cerr << "Error creating Expenses table: " << errMsg << std::endl;
+        cerr << "Error creating Expenses table: " << errMsg << endl;
         sqlite3_free(errMsg);
         return false;
     }
@@ -148,18 +150,18 @@ bool Database::initialize() {
     int num_categories = sizeof(default_categories) / sizeof(default_categories[0]);
     
     for (int i = 0; i < num_categories; ++i) {
-        std::string sql = "INSERT OR IGNORE INTO Categories (name) VALUES ('";
+        string sql = "INSERT OR IGNORE INTO Categories (name) VALUES ('";
         sql += default_categories[i];
         sql += "')";
         
         if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
-            std::cerr << "Error inserting category: " << errMsg << std::endl;
+            cerr << "Error inserting category: " << errMsg << endl;
             sqlite3_free(errMsg);
             return false;
         }
     }
     
-    std::cout << "Database initialized successfully with default categories." << std::endl;
+    cout << "Database initialized successfully with default categories." << endl;
     return true;
 }
 

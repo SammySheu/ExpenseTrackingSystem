@@ -13,27 +13,29 @@
 #include <iostream>
 #include <sstream>
 
+using namespace std;
+
 /**
  * C++ FEATURE: Pass by reference to avoid copying
  * Database& db - reference avoids copying entire Database object
- * const std::string& name - const reference for read-only access
+ * const string& name - const reference for read-only access
  * 
  * CONTRAST WITH PYTHON: Python always uses references implicitly
  */
-int Models::createUser(Database& db, const std::string& name) {
+int Models::createUser(Database& db, const string& name) {
     sqlite3* conn = db.getConnection();
     if (!conn) {
-        throw std::runtime_error("Database not connected");
+        throw runtime_error("Database not connected");
     }
     
     // Validate user name is not empty
-    std::string trimmed_name = name;
+    string trimmed_name = name;
     // Trim whitespace
     trimmed_name.erase(0, trimmed_name.find_first_not_of(" \t\n\r"));
     trimmed_name.erase(trimmed_name.find_last_not_of(" \t\n\r") + 1);
     
     if (trimmed_name.empty()) {
-        throw std::invalid_argument("User name cannot be empty");
+        throw invalid_argument("User name cannot be empty");
     }
     
     // C++ FEATURE: Prepared statements for SQL injection prevention
@@ -42,7 +44,7 @@ int Models::createUser(Database& db, const std::string& name) {
     
     // Prepare statement
     if (sqlite3_prepare_v2(conn, sql, -1, &stmt, nullptr) != SQLITE_OK) {
-        throw std::runtime_error("Failed to prepare statement");
+        throw runtime_error("Failed to prepare statement");
     }
     
     // Bind parameter
@@ -60,7 +62,7 @@ int Models::createUser(Database& db, const std::string& name) {
     sqlite3_finalize(stmt);
     
     if (rc != SQLITE_DONE) {
-        throw std::runtime_error("Failed to insert user");
+        throw runtime_error("Failed to insert user");
     }
     
     return user_id;
@@ -71,8 +73,8 @@ int Models::createUser(Database& db, const std::string& name) {
  * CONTRAST WITH PYTHON: Python returns list of dictionaries
  * C++ returns vector of User structs with static types
  */
-std::vector<User> Models::getAllUsers(Database& db) {
-    std::vector<User> users;  // C++ FEATURE: STL vector container
+vector<User> Models::getAllUsers(Database& db) {
+    vector<User> users;  // C++ FEATURE: STL vector container
     sqlite3* conn = db.getConnection();
     
     if (!conn) {
@@ -90,7 +92,7 @@ std::vector<User> Models::getAllUsers(Database& db) {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
         const unsigned char* name_text = sqlite3_column_text(stmt, 1);
-        std::string name(reinterpret_cast<const char*>(name_text));
+        string name(reinterpret_cast<const char*>(name_text));
         
         // C++ FEATURE: Create struct and add to vector
         users.push_back(User(id, name));
@@ -101,32 +103,32 @@ std::vector<User> Models::getAllUsers(Database& db) {
 }
 
 /**
- * C++ FEATURE: std::optional for nullable return
- * Returns std::optional<User> - either contains a User or is empty
+ * C++ FEATURE: optional for nullable return
+ * Returns optional<User> - either contains a User or is empty
  * 
  * CONTRAST WITH PYTHON: Python returns None or a dict
  */
-std::optional<User> Models::getUserByName(Database& db, const std::string& name) {
+optional<User> Models::getUserByName(Database& db, const string& name) {
     sqlite3* conn = db.getConnection();
     if (!conn) {
-        return std::nullopt;  // C++ FEATURE: std::nullopt represents "no value"
+        return nullopt;  // C++ FEATURE: nullopt represents "no value"
     }
     
     sqlite3_stmt* stmt;
     const char* sql = "SELECT id, name FROM Users WHERE name = ?";
     
     if (sqlite3_prepare_v2(conn, sql, -1, &stmt, nullptr) != SQLITE_OK) {
-        return std::nullopt;
+        return nullopt;
     }
     
     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
     
-    std::optional<User> result;
+    optional<User> result;
     
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
         const unsigned char* name_text = sqlite3_column_text(stmt, 1);
-        std::string name_str(reinterpret_cast<const char*>(name_text));
+        string name_str(reinterpret_cast<const char*>(name_text));
         
         result = User(id, name_str);  // C++ FEATURE: Optional assignment
     }
@@ -135,17 +137,17 @@ std::optional<User> Models::getUserByName(Database& db, const std::string& name)
     return result;
 }
 
-int Models::createCategory(Database& db, const std::string& name) {
+int Models::createCategory(Database& db, const string& name) {
     sqlite3* conn = db.getConnection();
     if (!conn) {
-        throw std::runtime_error("Database not connected");
+        throw runtime_error("Database not connected");
     }
     
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO Categories (name) VALUES (?)";
     
     if (sqlite3_prepare_v2(conn, sql, -1, &stmt, nullptr) != SQLITE_OK) {
-        throw std::runtime_error("Failed to prepare statement");
+        throw runtime_error("Failed to prepare statement");
     }
     
     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
@@ -160,14 +162,14 @@ int Models::createCategory(Database& db, const std::string& name) {
     sqlite3_finalize(stmt);
     
     if (rc != SQLITE_DONE) {
-        throw std::runtime_error("Failed to insert category");
+        throw runtime_error("Failed to insert category");
     }
     
     return category_id;
 }
 
-std::vector<Category> Models::getAllCategories(Database& db) {
-    std::vector<Category> categories;
+vector<Category> Models::getAllCategories(Database& db) {
+    vector<Category> categories;
     sqlite3* conn = db.getConnection();
     
     if (!conn) {
@@ -184,7 +186,7 @@ std::vector<Category> Models::getAllCategories(Database& db) {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
         const unsigned char* name_text = sqlite3_column_text(stmt, 1);
-        std::string name(reinterpret_cast<const char*>(name_text));
+        string name(reinterpret_cast<const char*>(name_text));
         
         categories.push_back(Category(id, name));
     }
@@ -193,27 +195,27 @@ std::vector<Category> Models::getAllCategories(Database& db) {
     return categories;
 }
 
-std::optional<Category> Models::getCategoryByName(Database& db, const std::string& name) {
+optional<Category> Models::getCategoryByName(Database& db, const string& name) {
     sqlite3* conn = db.getConnection();
     if (!conn) {
-        return std::nullopt;
+        return nullopt;
     }
     
     sqlite3_stmt* stmt;
     const char* sql = "SELECT id, name FROM Categories WHERE name = ?";
     
     if (sqlite3_prepare_v2(conn, sql, -1, &stmt, nullptr) != SQLITE_OK) {
-        return std::nullopt;
+        return nullopt;
     }
     
     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
     
-    std::optional<Category> result;
+    optional<Category> result;
     
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
         const unsigned char* name_text = sqlite3_column_text(stmt, 1);
-        std::string name_str(reinterpret_cast<const char*>(name_text));
+        string name_str(reinterpret_cast<const char*>(name_text));
         
         result = Category(id, name_str);
     }
@@ -222,30 +224,30 @@ std::optional<Category> Models::getCategoryByName(Database& db, const std::strin
     return result;
 }
 
-int Models::insertExpense(Database& db, const std::string& date, 
-                         int category_id, const std::string& title, 
+int Models::insertExpense(Database& db, const string& date, 
+                         int category_id, const string& title, 
                          double amount, int user_id) {
     sqlite3* conn = db.getConnection();
     if (!conn) {
-        throw std::runtime_error("Database not connected");
+        throw runtime_error("Database not connected");
     }
     
     // Validate title is not empty
-    std::string trimmed_title = title;
+    string trimmed_title = title;
     // Trim whitespace
     trimmed_title.erase(0, trimmed_title.find_first_not_of(" \t\n\r"));
     trimmed_title.erase(trimmed_title.find_last_not_of(" \t\n\r") + 1);
     
     if (trimmed_title.empty()) {
-        throw std::invalid_argument("Expense title cannot be empty");
+        throw invalid_argument("Expense title cannot be empty");
     }
     
     // Validate amount is positive
     if (amount <= 0.0) {
-        throw std::invalid_argument("Expense amount must be positive");
+        throw invalid_argument("Expense amount must be positive");
     }
     
-    std::string created_at = Database::getCurrentTimestamp();
+    string created_at = Database::getCurrentTimestamp();
     
     sqlite3_stmt* stmt;
     const char* sql = R"(
@@ -254,7 +256,7 @@ int Models::insertExpense(Database& db, const std::string& date,
     )";
     
     if (sqlite3_prepare_v2(conn, sql, -1, &stmt, nullptr) != SQLITE_OK) {
-        throw std::runtime_error("Failed to prepare statement");
+        throw runtime_error("Failed to prepare statement");
     }
     
     // C++ FEATURE: Explicit type binding for each parameter
@@ -275,7 +277,7 @@ int Models::insertExpense(Database& db, const std::string& date,
     sqlite3_finalize(stmt);
     
     if (rc != SQLITE_DONE) {
-        throw std::runtime_error("Failed to insert expense");
+        throw runtime_error("Failed to insert expense");
     }
     
     return expense_id;
@@ -286,18 +288,18 @@ int Models::insertExpense(Database& db, const std::string& date,
  * nullptr indicates "not provided" (similar to Python's None)
  * 
  * CONTRAST WITH PYTHON: Python uses Optional[] type hints and None
- * C++ uses raw pointers or std::optional
+ * C++ uses raw pointers or optional
  */
-std::vector<Expense> Models::fetchExpensesByFilters(
+vector<Expense> Models::fetchExpensesByFilters(
     Database& db,
-    const std::string* min_date,
-    const std::string* max_date,
+    const string* min_date,
+    const string* max_date,
     const double* min_amount,
     const double* max_amount,
-    const std::vector<int>* category_ids,
+    const vector<int>* category_ids,
     const int* user_id
 ) {
-    std::vector<Expense> expenses;
+    vector<Expense> expenses;
     sqlite3* conn = db.getConnection();
     
     if (!conn) {
@@ -305,7 +307,7 @@ std::vector<Expense> Models::fetchExpensesByFilters(
     }
     
     // Build SQL query dynamically
-    std::stringstream query;
+    stringstream query;
     query << R"(
         SELECT e.id, e.date, e.title, e.amount, e.created_at,
                c.name as category_name, u.name as user_name
@@ -315,7 +317,7 @@ std::vector<Expense> Models::fetchExpensesByFilters(
     )";
     
     // Build WHERE clause
-    std::vector<std::string> conditions;
+    vector<string> conditions;
     
     if (min_date != nullptr) {
         conditions.push_back("e.date >= ?");
@@ -330,7 +332,7 @@ std::vector<Expense> Models::fetchExpensesByFilters(
         conditions.push_back("e.amount <= ?");
     }
     if (category_ids != nullptr && !category_ids->empty()) {
-        std::stringstream cat_condition;
+        stringstream cat_condition;
         cat_condition << "e.category_id IN (";
         for (size_t i = 0; i < category_ids->size(); ++i) {
             if (i > 0) cat_condition << ",";
@@ -356,7 +358,7 @@ std::vector<Expense> Models::fetchExpensesByFilters(
     
     // Prepare statement
     sqlite3_stmt* stmt;
-    std::string sql_str = query.str();
+    string sql_str = query.str();
     
     if (sqlite3_prepare_v2(conn, sql_str.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
         return expenses;

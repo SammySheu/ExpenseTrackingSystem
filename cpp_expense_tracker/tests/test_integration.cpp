@@ -14,6 +14,8 @@
 #include "test_helpers.h"
 #include "../expense_operations.h"
 
+using namespace std;
+
 // ============================================================================
 // END-TO-END WORKFLOW TESTS
 // ============================================================================
@@ -41,7 +43,7 @@ TEST_F(ModelsTest, CompleteExpenseWorkflow) {
     ASSERT_TRUE(category.has_value());
     
     // Step 4: View all expenses
-    std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
     ASSERT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].title, "Weekly Shopping");
     EXPECT_DOUBLE_EQ(expenses[0].amount, 150.0);
@@ -68,11 +70,11 @@ TEST_F(ModelsTest, MultipleUsersMultipleExpenses) {
     ExpenseOperations::recordExpense(*db, "2025-10-28", "Entertainment", "Movie", 20.0, "Charlie");
     
     // Verify all expenses were created
-    std::vector<Expense> all_expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> all_expenses = ExpenseOperations::viewAllExpenses(*db);
     EXPECT_EQ(all_expenses.size(), 4);
     
     // Verify users were created
-    std::vector<User> users = Models::getAllUsers(*db);
+    vector<User> users = Models::getAllUsers(*db);
     EXPECT_EQ(users.size(), 3);
     
     // Calculate summary
@@ -106,7 +108,7 @@ TEST_F(ModelsTest, FilterAndSummaryWorkflow) {
     ExpenseOperations::recordExpense(*db, "2025-10-30", "Food", "Dinner", 100.0, "User1");
     
     // Filter by date range
-    std::vector<Expense> filtered = ExpenseOperations::viewExpensesByDate(
+    vector<Expense> filtered = ExpenseOperations::viewExpensesByDate(
         *db, "2025-10-22", "2025-10-28"
     );
     
@@ -141,12 +143,12 @@ TEST_F(ModelsTest, DatabaseTransactionConsistency) {
     // Insert multiple expenses
     for (int i = 1; i <= 10; ++i) {
         Models::insertExpense(*db, "2025-10-25", category_id, 
-                            "Expense " + std::to_string(i), 
+                            "Expense " + to_string(i), 
                             10.0 * i, user_id);
     }
     
     // Verify count
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     EXPECT_EQ(expenses.size(), 10);
     
     // Verify total amount
@@ -174,18 +176,18 @@ TEST_F(ModelsTest, ForeignKeyConstraintsEnforced) {
     // Try to insert expense with invalid category ID
     EXPECT_THROW(
         Models::insertExpense(*db, "2025-10-25", 99999, "Invalid", 50.0, user_id),
-        std::runtime_error
+        runtime_error
     );
     
     // Try to insert expense with invalid user ID
     int category_id = createSampleCategory();
     EXPECT_THROW(
         Models::insertExpense(*db, "2025-10-25", category_id, "Invalid", 50.0, 99999),
-        std::runtime_error
+        runtime_error
     );
     
     // Verify no expenses were created
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     EXPECT_EQ(expenses.size(), 0);
 }
 
@@ -205,10 +207,10 @@ TEST_F(ModelsTest, MemoryManagementAcrossOperations) {
     
     // Create large number of expenses in nested scope
     {
-        std::vector<Expense> temp_expenses;
+        vector<Expense> temp_expenses;
         for (int i = 0; i < 100; ++i) {
             Models::insertExpense(*db, "2025-10-25", category_id,
-                                "Expense " + std::to_string(i), 10.0, user_id);
+                                "Expense " + to_string(i), 10.0, user_id);
         }
         
         temp_expenses = Models::fetchExpensesByFilters(*db);
@@ -218,7 +220,7 @@ TEST_F(ModelsTest, MemoryManagementAcrossOperations) {
     }
     
     // Verify expenses still in database
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     EXPECT_EQ(expenses.size(), 100);
     
     // Calculate summary (tests map memory management)
@@ -234,7 +236,7 @@ TEST_F(ModelsTest, MemoryManagementAcrossOperations) {
  * C++ FEATURE: RAII pattern in practice
  */
 TEST(IntegrationTest, RAIICleanupWorks) {
-    std::string test_path = "test_raii_integration.db";
+    string test_path = "test_raii_integration.db";
     
     {
         // Create database in nested scope
@@ -258,12 +260,12 @@ TEST(IntegrationTest, RAIICleanupWorks) {
     // Reopen and verify data persists
     {
         Database db(test_path);
-        std::vector<Expense> expenses = Models::fetchExpensesByFilters(db);
+        vector<Expense> expenses = Models::fetchExpensesByFilters(db);
         EXPECT_EQ(expenses.size(), 1);
     }
     
     // Cleanup
-    std::remove(test_path.c_str());
+    remove(test_path.c_str());
 }
 
 /**
@@ -284,8 +286,8 @@ TEST_F(ModelsTest, MultipleOperationsInSequence) {
     Models::insertExpense(*db, "2025-10-26", categories[1].id, "Exp2", 30.0, user2);
     
     // Operation 4: Fetch by different filters
-    std::vector<Expense> by_user1 = ExpenseOperations::viewExpensesByUser(*db, user1);
-    std::vector<Expense> by_user2 = ExpenseOperations::viewExpensesByUser(*db, user2);
+    vector<Expense> by_user1 = ExpenseOperations::viewExpensesByUser(*db, user1);
+    vector<Expense> by_user2 = ExpenseOperations::viewExpensesByUser(*db, user2);
     
     EXPECT_EQ(by_user1.size(), 1);
     EXPECT_EQ(by_user2.size(), 1);
@@ -315,11 +317,11 @@ TEST_F(ModelsTest, ExceptionSafetyAcrossModules) {
     // Note: insertExpense now validates at the Models layer
     EXPECT_THROW(
         Models::insertExpense(*db, "2025-10-25", category_id, "", 50.0, user_id),
-        std::invalid_argument
+        invalid_argument
     );
     
     // Verify database is still consistent
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     EXPECT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].title, "Valid");
 }
@@ -336,10 +338,10 @@ TEST_F(ModelsTest, STLContainerLifetimeManagement) {
     
     // Create vector in nested scope
     {
-        std::vector<int> expense_ids;
+        vector<int> expense_ids;
         for (int i = 0; i < 5; ++i) {
             int id = Models::insertExpense(*db, "2025-10-25", category_id,
-                                          "Expense " + std::to_string(i), 10.0, user_id);
+                                          "Expense " + to_string(i), 10.0, user_id);
             expense_ids.push_back(id);
         }
         
@@ -348,7 +350,7 @@ TEST_F(ModelsTest, STLContainerLifetimeManagement) {
     }
     
     // Verify expenses still exist in database
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     EXPECT_EQ(expenses.size(), 5);
 }
 
@@ -365,7 +367,7 @@ TEST_F(ModelsTest, NestedContainerOperations) {
     ExpenseOperations::recordExpense(*db, "2025-10-27", "Food", "Exp3", 30.0, "User2");
     
     // Get summary with nested containers
-    std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
     // C++ FEATURE: Access nested container

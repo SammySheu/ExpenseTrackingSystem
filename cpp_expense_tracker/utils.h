@@ -4,7 +4,7 @@
  * 
  * C++ FEATURES DEMONSTRATED:
  * - Function overloading
- * - String manipulation with std::string
+ * - String manipulation with string
  * - Reference parameters for output
  * - Static class organization
  */
@@ -16,35 +16,37 @@
 #include <vector>
 #include "expense.h"
 
+using namespace std;
+
 class Utils {
 public:
     // Validation functions
-    static bool validateDate(const std::string& date);
+    static bool validateDate(const string& date);
     static bool validateAmount(double amount);
-    static bool validateNonEmpty(const std::string& value);
+    static bool validateNonEmpty(const string& value);
     
     // Parsing functions
-    static bool parseDate(const std::string& input, std::string& output);
-    static bool parseAmount(const std::string& input, double& output);
+    static bool parseDate(const string& input, string& output);
+    static bool parseAmount(const string& input, double& output);
     
     // Formatting functions
-    static std::string formatCurrency(double amount);
-    static std::string formatExpenseOutput(const std::vector<Expense>& expenses);
-    static std::string formatSummaryOutput(const ExpenseSummary& summary);
+    static string formatCurrency(double amount);
+    static string formatExpenseOutput(const vector<Expense>& expenses);
+    static string formatSummaryOutput(const ExpenseSummary& summary);
     
     // Input functions
-    static std::string getUserInput(const std::string& prompt);
-    static bool getDateRangeInput(std::string& min_date, std::string& max_date);
+    static string getUserInput(const string& prompt);
+    static bool getDateRangeInput(string& min_date, string& max_date);
     static bool getAmountRangeInput(double& min_amount, double& max_amount);
     
     // Menu functions
-    static void displayMenu(const std::vector<std::string>& options, 
-                          const std::string& title = "Menu");
+    static void displayMenu(const vector<string>& options, 
+                          const string& title = "Menu");
     static int getMenuChoice(int max_choice);
     
     // String utilities
-    static std::string trim(const std::string& str);
-    static std::string toLower(const std::string& str);
+    static string trim(const string& str);
+    static string toLower(const string& str);
 };
 
 #endif // UTILS_H

@@ -14,6 +14,8 @@
 #include "test_helpers.h"
 #include "../utils.h"
 
+using namespace std;
+
 // ============================================================================
 // VALIDATION TESTS
 // ============================================================================
@@ -114,7 +116,7 @@ TEST(UtilsTest, ValidateNonEmptyRejectsEmpty) {
  * C++: Uses reference parameter for output, returns bool for success
  */
 TEST(UtilsTest, ParseDateSucceedsWithValidInput) {
-    std::string output;
+    string output;
     
     // C++ FEATURE: Reference parameter modified by function
     EXPECT_TRUE(Utils::parseDate("2025-10-25", output));
@@ -128,7 +130,7 @@ TEST(UtilsTest, ParseDateSucceedsWithValidInput) {
  * TEST: ParseDate fails with invalid input
  */
 TEST(UtilsTest, ParseDateFailsWithInvalidInput) {
-    std::string output;
+    string output;
     
     EXPECT_FALSE(Utils::parseDate("invalid", output));
     EXPECT_FALSE(Utils::parseDate("", output));
@@ -174,7 +176,7 @@ TEST(UtilsTest, ParseAmountFailsWithInvalidInput) {
  * 
  * CONTRAST WITH PYTHON:
  * Python: Uses f-strings or format()
- * C++: Uses std::ostringstream with iomanip
+ * C++: Uses ostringstream with iomanip
  */
 TEST(UtilsTest, FormatCurrencyFormatsCorrectly) {
     EXPECT_EQ(Utils::formatCurrency(50.0), "$50.00");
@@ -189,12 +191,12 @@ TEST(UtilsTest, FormatCurrencyFormatsCorrectly) {
  */
 TEST(UtilsTest, FormatExpenseOutputHandlesEmpty) {
     // C++ FEATURE: Empty vector initialization
-    std::vector<Expense> expenses;
+    vector<Expense> expenses;
     
-    std::string output = Utils::formatExpenseOutput(expenses);
+    string output = Utils::formatExpenseOutput(expenses);
     
     EXPECT_FALSE(output.empty());
-    EXPECT_NE(output.find("No expenses"), std::string::npos);
+    EXPECT_NE(output.find("No expenses"), string::npos);
 }
 
 /**
@@ -207,14 +209,14 @@ TEST_F(ModelsTest, FormatExpenseOutputSingleExpense) {
     
     Models::insertExpense(*db, "2025-10-25", category_id, "Test Expense", 50.0, user_id);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
-    std::string output = Utils::formatExpenseOutput(expenses);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    string output = Utils::formatExpenseOutput(expenses);
     
     // Verify output contains expense details
-    EXPECT_NE(output.find("Test Expense"), std::string::npos);
-    EXPECT_NE(output.find("$50.00"), std::string::npos);
-    EXPECT_NE(output.find("2025-10-25"), std::string::npos);
-    EXPECT_NE(output.find("TestUser"), std::string::npos);
+    EXPECT_NE(output.find("Test Expense"), string::npos);
+    EXPECT_NE(output.find("$50.00"), string::npos);
+    EXPECT_NE(output.find("2025-10-25"), string::npos);
+    EXPECT_NE(output.find("TestUser"), string::npos);
 }
 
 /**
@@ -229,18 +231,18 @@ TEST_F(ModelsTest, FormatExpenseOutputMultipleExpenses) {
     Models::insertExpense(*db, "2025-10-26", category_id, "Expense 2", 20.0, user_id);
     Models::insertExpense(*db, "2025-10-27", category_id, "Expense 3", 30.0, user_id);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
-    std::string output = Utils::formatExpenseOutput(expenses);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    string output = Utils::formatExpenseOutput(expenses);
     
     // Verify all expenses are in output
-    EXPECT_NE(output.find("Expense 1"), std::string::npos);
-    EXPECT_NE(output.find("Expense 2"), std::string::npos);
-    EXPECT_NE(output.find("Expense 3"), std::string::npos);
+    EXPECT_NE(output.find("Expense 1"), string::npos);
+    EXPECT_NE(output.find("Expense 2"), string::npos);
+    EXPECT_NE(output.find("Expense 3"), string::npos);
     
     // Verify table structure
-    EXPECT_NE(output.find("Date"), std::string::npos);
-    EXPECT_NE(output.find("Title"), std::string::npos);
-    EXPECT_NE(output.find("Amount"), std::string::npos);
+    EXPECT_NE(output.find("Date"), string::npos);
+    EXPECT_NE(output.find("Title"), string::npos);
+    EXPECT_NE(output.find("Amount"), string::npos);
 }
 
 /**
@@ -253,10 +255,10 @@ TEST(UtilsTest, FormatSummaryOutputEmpty) {
     summary.total = 0.0;
     summary.count = 0;
     
-    std::string output = Utils::formatSummaryOutput(summary);
+    string output = Utils::formatSummaryOutput(summary);
     
-    EXPECT_NE(output.find("$0.00"), std::string::npos);
-    EXPECT_NE(output.find("0"), std::string::npos);
+    EXPECT_NE(output.find("$0.00"), string::npos);
+    EXPECT_NE(output.find("0"), string::npos);
 }
 
 /**
@@ -270,15 +272,15 @@ TEST_F(ModelsTest, FormatSummaryOutputWithData) {
     Models::insertExpense(*db, "2025-10-25", category_id, "Expense 1", 50.0, user_id);
     Models::insertExpense(*db, "2025-10-26", category_id, "Expense 2", 30.0, user_id);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
-    std::string output = Utils::formatSummaryOutput(summary);
+    string output = Utils::formatSummaryOutput(summary);
     
     // Verify summary sections
-    EXPECT_NE(output.find("EXPENSE SUMMARY"), std::string::npos);
-    EXPECT_NE(output.find("Total Expenses"), std::string::npos);
-    EXPECT_NE(output.find("$80.00"), std::string::npos);
+    EXPECT_NE(output.find("EXPENSE SUMMARY"), string::npos);
+    EXPECT_NE(output.find("Total Expenses"), string::npos);
+    EXPECT_NE(output.find("$80.00"), string::npos);
 }
 
 /**
@@ -293,15 +295,15 @@ TEST_F(ModelsTest, FormatSummaryOutputUserTables) {
     Models::insertExpense(*db, "2025-10-25", category_id, "User1 Exp", 50.0, user1);
     Models::insertExpense(*db, "2025-10-26", category_id, "User2 Exp", 30.0, user2);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
-    std::string output = Utils::formatSummaryOutput(summary);
+    string output = Utils::formatSummaryOutput(summary);
     
     // Verify user sections
-    EXPECT_NE(output.find("User1"), std::string::npos);
-    EXPECT_NE(output.find("User2"), std::string::npos);
-    EXPECT_NE(output.find("EXPENSES BY USER"), std::string::npos);
+    EXPECT_NE(output.find("User1"), string::npos);
+    EXPECT_NE(output.find("User2"), string::npos);
+    EXPECT_NE(output.find("EXPENSES BY USER"), string::npos);
 }
 
 /**
@@ -317,14 +319,14 @@ TEST_F(ModelsTest, FormatSummaryOutputCategoryPercentages) {
     Models::insertExpense(*db, "2025-10-25", categories[0].id, "Exp1", 75.0, user_id);
     Models::insertExpense(*db, "2025-10-26", categories[1].id, "Exp2", 25.0, user_id);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
-    std::string output = Utils::formatSummaryOutput(summary);
+    string output = Utils::formatSummaryOutput(summary);
     
     // Verify percentages are shown
-    EXPECT_NE(output.find("%"), std::string::npos);
-    EXPECT_NE(output.find("CATEGORY BREAKDOWN"), std::string::npos);
+    EXPECT_NE(output.find("%"), string::npos);
+    EXPECT_NE(output.find("CATEGORY BREAKDOWN"), string::npos);
 }
 
 // ============================================================================
@@ -337,7 +339,7 @@ TEST_F(ModelsTest, FormatSummaryOutputCategoryPercentages) {
  * 
  * CONTRAST WITH PYTHON:
  * Python: str.strip()
- * C++: Custom trim function or std::string manipulation
+ * C++: Custom trim function or string manipulation
  */
 TEST(UtilsTest, TrimRemovesWhitespace) {
     EXPECT_EQ(Utils::trim("  test  "), "test");
@@ -353,7 +355,7 @@ TEST(UtilsTest, TrimRemovesWhitespace) {
  * 
  * CONTRAST WITH PYTHON:
  * Python: str.lower()
- * C++: std::transform with std::tolower
+ * C++: transform with tolower
  */
 TEST(UtilsTest, ToLowerConvertsCorrectly) {
     EXPECT_EQ(Utils::toLower("TEST"), "test");

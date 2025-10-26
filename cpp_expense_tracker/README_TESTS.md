@@ -27,14 +27,14 @@ cpp_expense_tracker/
 - **RAII Pattern**: Constructor/destructor resource management
 - **Connection Management**: Database connection lifecycle
 - **Schema Initialization**: Table and default data creation
-- **Smart Pointers**: std::unique_ptr usage
+- **Smart Pointers**: unique_ptr usage
 - **Exception Safety**: Resource cleanup on exceptions
 
 **Key C++ Features Tested:**
 
 - RAII (Resource Acquisition Is Initialization)
 - Destructor cleanup
-- Smart pointers (std::unique_ptr)
+- Smart pointers (unique_ptr)
 - Static methods
 - Raw pointer management
 
@@ -43,14 +43,14 @@ cpp_expense_tracker/
 - **User Operations**: Create, read, validate users
 - **Category Operations**: CRUD operations on categories
 - **Expense Operations**: Insert, fetch with filters
-- **STL Containers**: std::vector operations
-- **Optional Types**: std::optional return values
+- **STL Containers**: vector operations
+- **Optional Types**: optional return values
 - **Exception Handling**: EXPECT_THROW testing
 
 **Key C++ Features Tested:**
 
 - STL vectors
-- std::optional (C++17)
+- optional (C++17)
 - Pass by reference (const &)
 - Pointer parameters for optional values
 - Exception handling
@@ -64,9 +64,9 @@ cpp_expense_tracker/
 
 **Key C++ Features Tested:**
 
-- String manipulation (std::string)
+- String manipulation (string)
 - Reference parameters for output
-- String streams (std::ostringstream)
+- String streams (ostringstream)
 - iomanip formatting
 
 ### 4. Expense Operations Tests (`test_expense_operations.cpp`)
@@ -313,7 +313,7 @@ Expected: (value) == (expected), actual: 10 vs 20
 | **Assertions**     | EXPECT*\*/ASSERT*\* | assert           |
 | **Mocking**        | Google Mock         | pytest-mock      |
 | **Containers**     | STL (vector, map)   | list, dict       |
-| **Optional**       | std::optional       | None             |
+| **Optional**       | optional            | None             |
 | **Exceptions**     | EXPECT_THROW        | pytest.raises    |
 | **RAII**           | Tested explicitly   | N/A (GC handles) |
 
@@ -335,7 +335,7 @@ TEST(DatabaseTest, RAIICleanup) {
 
 ```cpp
 TEST(MemoryTest, SmartPointerCleanup) {
-    auto db = std::make_unique<Database>("test.db");
+    auto db = make_unique<Database>("test.db");
     EXPECT_NE(db, nullptr);
     // No manual delete needed
 }
@@ -347,7 +347,7 @@ TEST(MemoryTest, SmartPointerCleanup) {
 TEST(ModelsTest, ThrowsOnInvalidInput) {
     EXPECT_THROW(
         Models::createUser(db, ""),
-        std::invalid_argument
+        invalid_argument
     );
 }
 ```
@@ -365,7 +365,7 @@ TEST(ModelsTest, ReturnsOptional) {
 
 ```cpp
 TEST(ModelsTest, ReturnsVector) {
-    std::vector<User> users = Models::getAllUsers(db);
+    vector<User> users = Models::getAllUsers(db);
     EXPECT_EQ(users.size(), 0);
     EXPECT_TRUE(users.empty());
 }

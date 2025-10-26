@@ -14,6 +14,8 @@
 #include "../expense_operations.h"
 #include "../utils.h"
 
+using namespace std;
+
 // ============================================================================
 // USER STORY TESTS
 // ============================================================================
@@ -36,7 +38,7 @@ TEST_F(ModelsTest, UserCanRecordExpense) {
     ASSERT_GT(expense_id, 0);
     
     // User can view the expense
-    std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
     ASSERT_EQ(expenses.size(), 1);
     
     // Verify expense details
@@ -60,7 +62,7 @@ TEST_F(ModelsTest, UserCanViewExpensesByDate) {
     ExpenseOperations::recordExpense(*db, "2025-10-30", "Food", "Dinner", 30.0, "User");
     
     // User filters by date range (Oct 22-28)
-    std::vector<Expense> filtered = ExpenseOperations::viewExpensesByDate(
+    vector<Expense> filtered = ExpenseOperations::viewExpensesByDate(
         *db, "2025-10-22", "2025-10-28"
     );
     
@@ -83,7 +85,7 @@ TEST_F(ModelsTest, UserCanViewSummary) {
     ExpenseOperations::recordExpense(*db, "2025-10-27", "Food", "Dinner", 40.0, "Alice");
     
     // User views summary
-    std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
     // User sees total and count
@@ -112,7 +114,7 @@ TEST_F(ModelsTest, UserCanViewSummary) {
  */
 TEST_F(ModelsTest, UserCanManageCategories) {
     // System has default categories
-    std::vector<Category> categories = Models::getAllCategories(*db);
+    vector<Category> categories = Models::getAllCategories(*db);
     size_t initial_count = categories.size();
     EXPECT_GT(initial_count, 0);
     
@@ -131,7 +133,7 @@ TEST_F(ModelsTest, UserCanManageCategories) {
     EXPECT_GT(expense_id, 0);
     
     // Verify expense has correct category
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ASSERT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].category_name, "CustomCategory");
 }
@@ -149,14 +151,14 @@ TEST_F(ModelsTest, UserCanManageUsers) {
     ExpenseOperations::recordExpense(*db, "2025-10-27", "Food", "Alice Dinner", 45.0, "Alice");
     
     // System tracks users separately
-    std::vector<User> users = Models::getAllUsers(*db);
+    vector<User> users = Models::getAllUsers(*db);
     EXPECT_EQ(users.size(), 2);
     
     // User can view expenses by specific user
     auto alice = Models::getUserByName(*db, "Alice");
     ASSERT_TRUE(alice.has_value());
     
-    std::vector<Expense> alice_expenses = ExpenseOperations::viewExpensesByUser(*db, alice->id);
+    vector<Expense> alice_expenses = ExpenseOperations::viewExpensesByUser(*db, alice->id);
     EXPECT_EQ(alice_expenses.size(), 2);
     
     // Verify Alice's total
@@ -176,35 +178,35 @@ TEST_F(ModelsTest, ExpenseValidationPreventsInvalidData) {
     // Invalid date format
     EXPECT_THROW(
         ExpenseOperations::recordExpense(*db, "invalid", "Food", "Test", 50.0, "User"),
-        std::invalid_argument
+        invalid_argument
     );
     
     // Negative amount
     EXPECT_THROW(
         ExpenseOperations::recordExpense(*db, "2025-10-25", "Food", "Test", -50.0, "User"),
-        std::invalid_argument
+        invalid_argument
     );
     
     // Zero amount
     EXPECT_THROW(
         ExpenseOperations::recordExpense(*db, "2025-10-25", "Food", "Test", 0.0, "User"),
-        std::invalid_argument
+        invalid_argument
     );
     
     // Empty title
     EXPECT_THROW(
         ExpenseOperations::recordExpense(*db, "2025-10-25", "Food", "", 50.0, "User"),
-        std::invalid_argument
+        invalid_argument
     );
     
     // Empty user name
     EXPECT_THROW(
         ExpenseOperations::recordExpense(*db, "2025-10-25", "Food", "Test", 50.0, ""),
-        std::invalid_argument
+        invalid_argument
     );
     
     // Verify no invalid expenses were created
-    std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
     EXPECT_EQ(expenses.size(), 0);
 }
 
@@ -222,7 +224,7 @@ TEST_F(ModelsTest, UserCanFilterByAmountRange) {
     ExpenseOperations::recordExpense(*db, "2025-10-25", "Food", "Very Expensive", 200.0, "User");
     
     // User filters by amount range ($40-$120)
-    std::vector<Expense> filtered = ExpenseOperations::viewExpensesByAmount(*db, 40.0, 120.0);
+    vector<Expense> filtered = ExpenseOperations::viewExpensesByAmount(*db, 40.0, 120.0);
     
     // User sees only expenses in range
     ASSERT_EQ(filtered.size(), 2);
@@ -244,8 +246,8 @@ TEST_F(ModelsTest, UserCanFilterByCategory) {
     ExpenseOperations::recordExpense(*db, "2025-10-25", "Food", "Dinner", 40.0, "User");
     
     // User filters by Food category
-    std::vector<std::string> categories = {"Food"};
-    std::vector<Expense> filtered = ExpenseOperations::viewExpensesByCategory(*db, categories);
+    vector<string> categories = {"Food"};
+    vector<Expense> filtered = ExpenseOperations::viewExpensesByCategory(*db, categories);
     
     // User sees only Food expenses
     ASSERT_EQ(filtered.size(), 2);
@@ -274,7 +276,7 @@ TEST_F(ModelsTest, UserCanTrackExpensesOverTime) {
     ExpenseOperations::recordExpense(*db, "2025-10-24", "Food", "Friday Lunch", 22.0, "User");
     
     // User views all expenses
-    std::vector<Expense> all_expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> all_expenses = ExpenseOperations::viewAllExpenses(*db);
     EXPECT_EQ(all_expenses.size(), 5);
     
     // User calculates weekly summary
@@ -283,7 +285,7 @@ TEST_F(ModelsTest, UserCanTrackExpensesOverTime) {
     EXPECT_EQ(summary.count, 5);
     
     // User can view specific date range
-    std::vector<Expense> midweek = ExpenseOperations::viewExpensesByDate(
+    vector<Expense> midweek = ExpenseOperations::viewExpensesByDate(
         *db, "2025-10-22", "2025-10-23"
     );
     EXPECT_EQ(midweek.size(), 2);
@@ -319,9 +321,9 @@ TEST_F(ModelsTest, MultipleUsersIndependentTracking) {
     ASSERT_TRUE(bob.has_value());
     ASSERT_TRUE(charlie.has_value());
     
-    std::vector<Expense> alice_expenses = ExpenseOperations::viewExpensesByUser(*db, alice->id);
-    std::vector<Expense> bob_expenses = ExpenseOperations::viewExpensesByUser(*db, bob->id);
-    std::vector<Expense> charlie_expenses = ExpenseOperations::viewExpensesByUser(*db, charlie->id);
+    vector<Expense> alice_expenses = ExpenseOperations::viewExpensesByUser(*db, alice->id);
+    vector<Expense> bob_expenses = ExpenseOperations::viewExpensesByUser(*db, bob->id);
+    vector<Expense> charlie_expenses = ExpenseOperations::viewExpensesByUser(*db, charlie->id);
     
     EXPECT_EQ(alice_expenses.size(), 2);
     EXPECT_EQ(bob_expenses.size(), 2);
@@ -337,7 +339,7 @@ TEST_F(ModelsTest, MultipleUsersIndependentTracking) {
     EXPECT_DOUBLE_EQ(charlie_summary.total, 30.0);
     
     // Overall summary shows all users
-    std::vector<Expense> all_expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> all_expenses = ExpenseOperations::viewAllExpenses(*db);
     ExpenseSummary overall = ExpenseOperations::calculateSummary(*db, &all_expenses);
     
     EXPECT_DOUBLE_EQ(overall.total, 80.0);
@@ -359,23 +361,23 @@ TEST_F(ModelsTest, UserSeesFormattedOutput) {
     ExpenseOperations::recordExpense(*db, "2025-10-26", "Transport", "Taxi", 15.75, "User");
     
     // User views formatted expense list
-    std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
-    std::string expense_output = Utils::formatExpenseOutput(expenses);
+    vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
+    string expense_output = Utils::formatExpenseOutput(expenses);
     
     // Output contains formatted data
-    EXPECT_NE(expense_output.find("$25.50"), std::string::npos);
-    EXPECT_NE(expense_output.find("$15.75"), std::string::npos);
-    EXPECT_NE(expense_output.find("Lunch"), std::string::npos);
-    EXPECT_NE(expense_output.find("Taxi"), std::string::npos);
+    EXPECT_NE(expense_output.find("$25.50"), string::npos);
+    EXPECT_NE(expense_output.find("$15.75"), string::npos);
+    EXPECT_NE(expense_output.find("Lunch"), string::npos);
+    EXPECT_NE(expense_output.find("Taxi"), string::npos);
     
     // User views formatted summary
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
-    std::string summary_output = Utils::formatSummaryOutput(summary);
+    string summary_output = Utils::formatSummaryOutput(summary);
     
     // Summary contains formatted totals
-    EXPECT_NE(summary_output.find("$41.25"), std::string::npos);
-    EXPECT_NE(summary_output.find("EXPENSE SUMMARY"), std::string::npos);
-    EXPECT_NE(summary_output.find("%"), std::string::npos);  // Percentages
+    EXPECT_NE(summary_output.find("$41.25"), string::npos);
+    EXPECT_NE(summary_output.find("EXPENSE SUMMARY"), string::npos);
+    EXPECT_NE(summary_output.find("%"), string::npos);  // Percentages
 }
 
 /**
@@ -387,7 +389,7 @@ TEST_F(ModelsTest, UserSeesFormattedOutput) {
  * C++ FEATURE: RAII ensures automatic cleanup
  */
 TEST(FunctionalTest, UserBenefitsFromRAII) {
-    std::string test_path = "test_functional_raii.db";
+    string test_path = "test_functional_raii.db";
     
     // User performs operations in a scope
     {
@@ -403,11 +405,11 @@ TEST(FunctionalTest, UserBenefitsFromRAII) {
     // User can reopen and continue working
     {
         Database db(test_path);
-        std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(db);
+        vector<Expense> expenses = ExpenseOperations::viewAllExpenses(db);
         EXPECT_EQ(expenses.size(), 1);
     }
     
     // Cleanup
-    std::remove(test_path.c_str());
+    remove(test_path.c_str());
 }
 

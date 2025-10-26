@@ -16,6 +16,8 @@
 #include <vector>
 #include <map>
 
+using namespace std;
+
 /**
  * STRUCT vs PYTHON DICT:
  * C++ uses structs with fixed types known at compile time
@@ -24,35 +26,35 @@
 
 struct User {
     int id;
-    std::string name;
+    string name;
     
     // C++ FEATURE: Default constructor
     User() : id(0), name("") {}
     
     // C++ FEATURE: Parameterized constructor with initializer list
-    User(int id, const std::string& name) : id(id), name(name) {}
+    User(int id, const string& name) : id(id), name(name) {}
 };
 
 struct Category {
     int id;
-    std::string name;
+    string name;
     
     Category() : id(0), name("") {}
-    Category(int id, const std::string& name) : id(id), name(name) {}
+    Category(int id, const string& name) : id(id), name(name) {}
 };
 
 struct Expense {
     int id;
-    std::string date;           // YYYY-MM-DD format
-    std::string title;
+    string date;           // YYYY-MM-DD format
+    string title;
     double amount;
-    std::string created_at;
+    string created_at;
     int category_id;
     int user_id;
     
     // Additional fields for display (populated from joins)
-    std::string category_name;
-    std::string user_name;
+    string category_name;
+    string user_name;
     
     // C++ FEATURE: Default constructor with member initialization
     Expense() : id(0), date(""), title(""), amount(0.0), 
@@ -60,8 +62,8 @@ struct Expense {
                 category_name(""), user_name("") {}
     
     // C++ FEATURE: Parameterized constructor
-    Expense(int id, const std::string& date, const std::string& title, 
-            double amount, const std::string& created_at,
+    Expense(int id, const string& date, const string& title, 
+            double amount, const string& created_at,
             int category_id, int user_id)
         : id(id), date(date), title(title), amount(amount),
           created_at(created_at), category_id(category_id), user_id(user_id),
@@ -76,9 +78,9 @@ struct Expense {
 struct ExpenseSummary {
     double total;
     int count;
-    std::map<std::string, double> by_category;      // STL map vs Python dict
-    std::map<std::string, double> by_user;          // STL map vs Python dict
-    std::map<std::string, std::vector<Expense>> user_expenses;  // STL containers
+    map<string, double> by_category;      // STL map vs Python dict
+    map<string, double> by_user;          // STL map vs Python dict
+    map<string, vector<Expense>> user_expenses;  // STL containers
     
     // C++ FEATURE: Constructor with member initialization
     ExpenseSummary() : total(0.0), count(0) {}

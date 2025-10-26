@@ -16,38 +16,40 @@
 #include "expense.h"
 #include "database.h"
 
+using namespace std;
+
 class ExpenseOperations {
 public:
     // Record a new expense with auto-creation of user/category if needed
-    static int recordExpense(Database& db, const std::string& date,
-                           const std::string& category, const std::string& title,
-                           double amount, const std::string& user_name);
+    static int recordExpense(Database& db, const string& date,
+                           const string& category, const string& title,
+                           double amount, const string& user_name);
     
     // View expenses with various filters
-    static std::vector<Expense> viewExpensesByDate(Database& db,
-                                                   const std::string& min_date = "",
-                                                   const std::string& max_date = "");
+    static vector<Expense> viewExpensesByDate(Database& db,
+                                                   const string& min_date = "",
+                                                   const string& max_date = "");
     
-    static std::vector<Expense> viewExpensesByAmount(Database& db,
+    static vector<Expense> viewExpensesByAmount(Database& db,
                                                      double min_amount = 0.0,
                                                      double max_amount = 0.0);
     
-    static std::vector<Expense> viewExpensesByCategory(Database& db,
-                                                       const std::vector<std::string>& categories);
+    static vector<Expense> viewExpensesByCategory(Database& db,
+                                                       const vector<string>& categories);
     
-    static std::vector<Expense> viewExpensesByUser(Database& db, int user_id);
+    static vector<Expense> viewExpensesByUser(Database& db, int user_id);
     
-    static std::vector<Expense> viewAllExpenses(Database& db);
+    static vector<Expense> viewAllExpenses(Database& db);
     
     // Calculate summary statistics
     static ExpenseSummary calculateSummary(Database& db,
-                                          const std::vector<Expense>* expenses = nullptr);
+                                          const vector<Expense>* expenses = nullptr);
     
     // Interactive filter functions
-    static std::vector<Expense> getExpensesByDateRange(Database& db);
-    static std::vector<Expense> getExpensesByAmountRange(Database& db);
-    static std::vector<Expense> getExpensesByCategory(Database& db);
-    static std::vector<Expense> getExpensesByUser(Database& db);
+    static vector<Expense> getExpensesByDateRange(Database& db);
+    static vector<Expense> getExpensesByAmountRange(Database& db);
+    static vector<Expense> getExpensesByCategory(Database& db);
+    static vector<Expense> getExpensesByUser(Database& db);
 };
 
 #endif // EXPENSE_OPERATIONS_H

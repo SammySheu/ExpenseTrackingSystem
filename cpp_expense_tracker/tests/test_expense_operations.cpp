@@ -14,6 +14,8 @@
 #include "test_helpers.h"
 #include "../expense_operations.h"
 
+using namespace std;
+
 // ============================================================================
 // RECORD EXPENSE TESTS
 // ============================================================================
@@ -80,7 +82,7 @@ TEST_F(ModelsTest, RecordExpenseInvalidDateThrows) {
         ExpenseOperations::recordExpense(
             *db, "invalid-date", categories[0].name, "Test", 50.0, "User"
         ),
-        std::invalid_argument
+        invalid_argument
     );
 }
 
@@ -95,14 +97,14 @@ TEST_F(ModelsTest, RecordExpenseInvalidAmountThrows) {
         ExpenseOperations::recordExpense(
             *db, "2025-10-25", categories[0].name, "Test", -50.0, "User"
         ),
-        std::invalid_argument
+        invalid_argument
     );
     
     EXPECT_THROW(
         ExpenseOperations::recordExpense(
             *db, "2025-10-25", categories[0].name, "Test", 0.0, "User"
         ),
-        std::invalid_argument
+        invalid_argument
     );
 }
 
@@ -117,7 +119,7 @@ TEST_F(ModelsTest, RecordExpenseEmptyTitleThrows) {
         ExpenseOperations::recordExpense(
             *db, "2025-10-25", categories[0].name, "", 50.0, "User"
         ),
-        std::invalid_argument
+        invalid_argument
     );
 }
 
@@ -137,7 +139,7 @@ TEST_F(ModelsTest, ViewExpensesByDateNoFilters) {
     Models::insertExpense(*db, "2025-10-26", category_id, "Exp2", 20.0, user_id);
     
     // C++ FEATURE: Default parameters (empty strings)
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(*db);
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(*db);
     
     EXPECT_EQ(expenses.size(), 2);
 }
@@ -152,7 +154,7 @@ TEST_F(ModelsTest, ViewExpensesByDateMinOnly) {
     Models::insertExpense(*db, "2025-10-20", category_id, "Early", 10.0, user_id);
     Models::insertExpense(*db, "2025-10-25", category_id, "Late", 20.0, user_id);
     
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(*db, "2025-10-23");
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(*db, "2025-10-23");
     
     EXPECT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].title, "Late");
@@ -168,7 +170,7 @@ TEST_F(ModelsTest, ViewExpensesByDateMaxOnly) {
     Models::insertExpense(*db, "2025-10-20", category_id, "Early", 10.0, user_id);
     Models::insertExpense(*db, "2025-10-25", category_id, "Late", 20.0, user_id);
     
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(*db, "", "2025-10-23");
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(*db, "", "2025-10-23");
     
     EXPECT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].title, "Early");
@@ -185,7 +187,7 @@ TEST_F(ModelsTest, ViewExpensesByDateRange) {
     Models::insertExpense(*db, "2025-10-25", category_id, "During", 20.0, user_id);
     Models::insertExpense(*db, "2025-10-30", category_id, "After", 30.0, user_id);
     
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByDate(
         *db, "2025-10-22", "2025-10-28"
     );
     
@@ -205,7 +207,7 @@ TEST_F(ModelsTest, ViewExpensesByAmountRange) {
     Models::insertExpense(*db, "2025-10-25", category_id, "Medium", 50.0, user_id);
     Models::insertExpense(*db, "2025-10-25", category_id, "Expensive", 100.0, user_id);
     
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByAmount(*db, 30.0, 70.0);
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByAmount(*db, 30.0, 70.0);
     
     EXPECT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].title, "Medium");
@@ -223,10 +225,10 @@ TEST_F(ModelsTest, ViewExpensesByCategorySingle) {
     Models::insertExpense(*db, "2025-10-25", categories[0].id, "Cat1", 10.0, user_id);
     Models::insertExpense(*db, "2025-10-25", categories[1].id, "Cat2", 20.0, user_id);
     
-    // C++ FEATURE: std::vector initialization
-    std::vector<std::string> category_names = {categories[0].name};
+    // C++ FEATURE: vector initialization
+    vector<string> category_names = {categories[0].name};
     
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByCategory(*db, category_names);
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByCategory(*db, category_names);
     
     EXPECT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].title, "Cat1");
@@ -244,9 +246,9 @@ TEST_F(ModelsTest, ViewExpensesByCategoryMultiple) {
     Models::insertExpense(*db, "2025-10-25", categories[1].id, "Cat2", 20.0, user_id);
     Models::insertExpense(*db, "2025-10-25", categories[2].id, "Cat3", 30.0, user_id);
     
-    std::vector<std::string> category_names = {categories[0].name, categories[2].name};
+    vector<string> category_names = {categories[0].name, categories[2].name};
     
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByCategory(*db, category_names);
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByCategory(*db, category_names);
     
     EXPECT_EQ(expenses.size(), 2);
 }
@@ -262,7 +264,7 @@ TEST_F(ModelsTest, ViewExpensesByUserValid) {
     Models::insertExpense(*db, "2025-10-25", category_id, "User1 Exp", 10.0, user1);
     Models::insertExpense(*db, "2025-10-25", category_id, "User2 Exp", 20.0, user2);
     
-    std::vector<Expense> expenses = ExpenseOperations::viewExpensesByUser(*db, user1);
+    vector<Expense> expenses = ExpenseOperations::viewExpensesByUser(*db, user1);
     
     EXPECT_EQ(expenses.size(), 1);
     EXPECT_EQ(expenses[0].user_name, "User1");
@@ -279,7 +281,7 @@ TEST_F(ModelsTest, ViewAllExpenses) {
     Models::insertExpense(*db, "2025-10-26", category_id, "Exp2", 20.0, user_id);
     Models::insertExpense(*db, "2025-10-27", category_id, "Exp3", 30.0, user_id);
     
-    std::vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
+    vector<Expense> expenses = ExpenseOperations::viewAllExpenses(*db);
     
     EXPECT_EQ(expenses.size(), 3);
 }
@@ -297,7 +299,7 @@ TEST_F(ModelsTest, ViewAllExpenses) {
  * C++: Returns struct with zero-initialized values
  */
 TEST_F(ModelsTest, CalculateSummaryEmpty) {
-    std::vector<Expense> expenses;
+    vector<Expense> expenses;
     
     // C++ FEATURE: Pointer to vector for optional parameter
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
@@ -319,13 +321,13 @@ TEST_F(ModelsTest, CalculateSummarySingleUser) {
     Models::insertExpense(*db, "2025-10-25", category_id, "Exp1", 50.0, user_id);
     Models::insertExpense(*db, "2025-10-26", category_id, "Exp2", 30.0, user_id);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
     EXPECT_DOUBLE_EQ(summary.total, 80.0);
     EXPECT_EQ(summary.count, 2);
     
-    // C++ FEATURE: std::map operations
+    // C++ FEATURE: map operations
     EXPECT_EQ(summary.by_user.size(), 1);
     EXPECT_DOUBLE_EQ(summary.by_user["TestUser"], 80.0);
 }
@@ -343,7 +345,7 @@ TEST_F(ModelsTest, CalculateSummaryMultipleUsers) {
     Models::insertExpense(*db, "2025-10-26", category_id, "U1 Exp2", 30.0, user1);
     Models::insertExpense(*db, "2025-10-27", category_id, "U2 Exp1", 20.0, user2);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
     EXPECT_DOUBLE_EQ(summary.total, 100.0);
@@ -366,7 +368,7 @@ TEST_F(ModelsTest, CalculateSummaryByCategory) {
     Models::insertExpense(*db, "2025-10-26", categories[0].id, "Cat1 Exp2", 30.0, user_id);
     Models::insertExpense(*db, "2025-10-27", categories[1].id, "Cat2 Exp1", 20.0, user_id);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
     // C++ FEATURE: Map with string keys
@@ -381,7 +383,7 @@ TEST_F(ModelsTest, CalculateSummaryByCategory) {
  * 
  * CONTRAST WITH PYTHON:
  * Python: dict[str, list[dict]]
- * C++: std::map<std::string, std::vector<Expense>>
+ * C++: map<string, vector<Expense>>
  */
 TEST_F(ModelsTest, CalculateSummaryUserExpensesGrouped) {
     int user1 = Models::createUser(*db, "User1");
@@ -392,7 +394,7 @@ TEST_F(ModelsTest, CalculateSummaryUserExpensesGrouped) {
     Models::insertExpense(*db, "2025-10-26", category_id, "U1 Exp2", 30.0, user1);
     Models::insertExpense(*db, "2025-10-27", category_id, "U2 Exp1", 20.0, user2);
     
-    std::vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
+    vector<Expense> expenses = Models::fetchExpensesByFilters(*db);
     ExpenseSummary summary = ExpenseOperations::calculateSummary(*db, &expenses);
     
     // C++ FEATURE: Nested container access

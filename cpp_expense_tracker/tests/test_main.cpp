@@ -14,6 +14,8 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
+using namespace std;
+
 /**
  * C++ FEATURE: Custom main() for test runner
  * Initializes Google Test and runs all tests
@@ -22,16 +24,16 @@
  * We include it to demonstrate C++ test setup
  */
 int main(int argc, char **argv) {
-    std::cout << "=================================================\n";
-    std::cout << "  C++ Expense Tracker - Test Suite\n";
-    std::cout << "=================================================\n";
-    std::cout << "Testing C++ features:\n";
-    std::cout << "  - RAII and resource management\n";
-    std::cout << "  - STL containers (vector, map, optional)\n";
-    std::cout << "  - Smart pointers (unique_ptr)\n";
-    std::cout << "  - Exception handling\n";
-    std::cout << "  - Memory management\n";
-    std::cout << "=================================================\n\n";
+    cout << "=================================================\n";
+    cout << "  C++ Expense Tracker - Test Suite\n";
+    cout << "=================================================\n";
+    cout << "Testing C++ features:\n";
+    cout << "  - RAII and resource management\n";
+    cout << "  - STL containers (vector, map, optional)\n";
+    cout << "  - Smart pointers (unique_ptr)\n";
+    cout << "  - Exception handling\n";
+    cout << "  - Memory management\n";
+    cout << "=================================================\n\n";
     
     // Initialize Google Test
     ::testing::InitGoogleTest(&argc, argv);
@@ -39,13 +41,13 @@ int main(int argc, char **argv) {
     // Run all tests
     int result = RUN_ALL_TESTS();
     
-    std::cout << "\n=================================================\n";
+    cout << "\n=================================================\n";
     if (result == 0) {
-        std::cout << "  ✓ All tests passed!\n";
+        cout << "  ✓ All tests passed!\n";
     } else {
-        std::cout << "  ✗ Some tests failed\n";
+        cout << "  ✗ Some tests failed\n";
     }
-    std::cout << "=================================================\n";
+    cout << "=================================================\n";
     
     return result;
 }

@@ -23,6 +23,8 @@
 #include "../expense.h"
 #include "../expense_operations.h"
 
+using namespace std;
+
 /**
  * C++ FEATURE: Test Fixture with RAII
  * Base test class that provides a clean database for each test
@@ -35,8 +37,8 @@
 class DatabaseTest : public ::testing::Test {
 protected:
     // C++ FEATURE: Smart pointer for automatic cleanup
-    std::unique_ptr<Database> db;
-    std::string test_db_path;
+    unique_ptr<Database> db;
+    string test_db_path;
     
     /**
      * SetUp runs before each test
@@ -45,11 +47,11 @@ protected:
     void SetUp() override {
         // Create unique test database path with timestamp
         test_db_path = "test_expenses_" + 
-                       std::to_string(std::time(nullptr)) + "_" +
-                       std::to_string(rand()) + ".db";
+                       to_string(time(nullptr)) + "_" +
+                       to_string(rand()) + ".db";
         
-        // C++ FEATURE: std::make_unique for smart pointer creation
-        db = std::make_unique<Database>(test_db_path);
+        // C++ FEATURE: make_unique for smart pointer creation
+        db = make_unique<Database>(test_db_path);
         db->initialize();
     }
     
@@ -62,7 +64,7 @@ protected:
         db.reset();
         
         // Remove test database file
-        std::remove(test_db_path.c_str());
+        remove(test_db_path.c_str());
     }
 };
 
@@ -80,7 +82,7 @@ protected:
      * Helper: Create a sample user for testing
      * Returns user ID
      */
-    int createSampleUser(const std::string& name = "TestUser") {
+    int createSampleUser(const string& name = "TestUser") {
         return Models::createUser(*db, name);
     }
     
@@ -111,7 +113,7 @@ protected:
  * Python would use a fixture that yields data
  * C++ uses regular functions that return data
  */
-inline std::vector<Expense> createMultipleExpenses(Database& db, int count) {
+inline vector<Expense> createMultipleExpenses(Database& db, int count) {
     // Create test user
     int user_id = Models::createUser(db, "TestUser");
     
@@ -122,11 +124,11 @@ inline std::vector<Expense> createMultipleExpenses(Database& db, int count) {
     }
     
     // Create expenses
-    std::vector<Expense> expenses;
+    vector<Expense> expenses;
     for (int i = 0; i < count; ++i) {
         int category_id = categories[i % categories.size()].id;
-        std::string date = "2025-10-" + std::to_string(20 + i);
-        std::string title = "Expense " + std::to_string(i + 1);
+        string date = "2025-10-" + to_string(20 + i);
+        string title = "Expense " + to_string(i + 1);
         double amount = 10.0 * (i + 1);
         
         Models::insertExpense(db, date, category_id, title, amount, user_id);
@@ -152,10 +154,10 @@ inline bool compareExpenses(const Expense& e1, const Expense& e2) {
 /**
  * C++ FEATURE: Helper for creating multiple users
  */
-inline std::vector<User> createMultipleUsers(Database& db, int count) {
-    std::vector<User> users;
+inline vector<User> createMultipleUsers(Database& db, int count) {
+    vector<User> users;
     for (int i = 0; i < count; ++i) {
-        std::string name = "User" + std::to_string(i + 1);
+        string name = "User" + to_string(i + 1);
         int id = Models::createUser(db, name);
         users.push_back(User(id, name));
     }
@@ -169,7 +171,7 @@ inline bool validateSummary(const ExpenseSummary& summary,
                            double expected_total, 
                            int expected_count) {
     const double EPSILON = 0.01;
-    return std::abs(summary.total - expected_total) < EPSILON &&
+    return abs(summary.total - expected_total) < EPSILON &&
            summary.count == expected_count;
 }
 

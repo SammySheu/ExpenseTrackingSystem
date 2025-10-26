@@ -17,6 +17,8 @@
 #include "expense.h"
 #include "database.h"
 
+using namespace std;
+
 /**
  * C++ FEATURE: Class with static methods
  * All database operations are organized as static methods
@@ -25,18 +27,18 @@
 class Models {
 public:
     // User operations
-    static int createUser(Database& db, const std::string& name);
-    static std::vector<User> getAllUsers(Database& db);
-    static std::optional<User> getUserByName(Database& db, const std::string& name);
+    static int createUser(Database& db, const string& name);
+    static vector<User> getAllUsers(Database& db);
+    static optional<User> getUserByName(Database& db, const string& name);
     
     // Category operations
-    static int createCategory(Database& db, const std::string& name);
-    static std::vector<Category> getAllCategories(Database& db);
-    static std::optional<Category> getCategoryByName(Database& db, const std::string& name);
+    static int createCategory(Database& db, const string& name);
+    static vector<Category> getAllCategories(Database& db);
+    static optional<Category> getCategoryByName(Database& db, const string& name);
     
     // Expense operations
-    static int insertExpense(Database& db, const std::string& date, 
-                           int category_id, const std::string& title, 
+    static int insertExpense(Database& db, const string& date, 
+                           int category_id, const string& title, 
                            double amount, int user_id);
     
     /**
@@ -44,13 +46,13 @@ public:
      * Optional parameters for filtering (similar to Python's None defaults)
      * Uses pointers for optional parameters
      */
-    static std::vector<Expense> fetchExpensesByFilters(
+    static vector<Expense> fetchExpensesByFilters(
         Database& db,
-        const std::string* min_date = nullptr,
-        const std::string* max_date = nullptr,
+        const string* min_date = nullptr,
+        const string* max_date = nullptr,
         const double* min_amount = nullptr,
         const double* max_amount = nullptr,
-        const std::vector<int>* category_ids = nullptr,
+        const vector<int>* category_ids = nullptr,
         const int* user_id = nullptr
     );
 };
